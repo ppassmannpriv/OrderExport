@@ -142,7 +142,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 		/*
         $this->subscribeEvent(
             'Enlight_Bootstrap_InitResource_ExportXml',
-            'onInitMyComponent'
+            'onInitExportXml'
         );*/
  
     }
@@ -151,6 +151,13 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 	{
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
 			echo $this->xmlPath();
+			if($this->createFile('test', $this->xmlPath(), 'xml', 'This is just a test, move along!'))
+			{
+				echo 'superb!';
+			} else {
+				echo 'wait what?';
+			}
+			
 			die();
 		}
 	}
@@ -163,7 +170,17 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 		return $path;
 	}
 	
-
+	public function createFile($name, $path, $type, $data)
+	{
+		$filePath = $path.DS.$name.'.'.$type;
+		file_put_contents($filePath, $data);
+		if(file_exists($filePath))
+		{
+			return true;
+		} else {
+			return false;
+		}
+	}
 
     /*public function onGetBackendController(Enlight_Event_EventArgs $arguments)
     {
@@ -171,21 +188,22 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             $this->Path() . 'Views/'
         );
         return $this->Path(). 'Controllers/Backend/viewExport.php';
-    }
+    }*/
  
- 
-    public function onInitMyComponent(Enlight_Event_EventArgs $arguments)
+	/*
+    public function onInitExportXml(Enlight_Event_EventArgs $arguments)
     {
         $this->Application()->Loader()->registerNamespace(
             'Shopware_Components',
             $this->Path() . 'Components/'
         );
  
-        $myComp = new Shopware_Components_ExportXml();
+        $component = new Shopware_Components_ExportXml();
  
-        return $myComp;
-    }
- 
+        return $component;
+    }*/
+
+	/* 
     public function onAddArticle(Enlight_Hook_HookArgs $arguments)
     {
         $id = $arguments->get('id');
