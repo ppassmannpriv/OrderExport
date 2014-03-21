@@ -12,7 +12,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
  
     public function getLabel()
     {
-        return 'Graphodata Export';
+        return 'Order Export (XML)';
     }
  
     public function getVersion()
@@ -25,15 +25,16 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             'version' => $this->getVersion(),
             'copyright' => 'Copyright (c) 2014, Pieter Paßmann',
             'label' => $this->getLabel(),
+			'autor' => 'Pieter Paßmann',
             'description' => file_get_contents($this->Path() . 'info.txt'),
-            'support' => 'http://turn-up.eu',
-            'link' => 'http://turn-up.eu',
+            'support' => 'http://www.turn-up.eu',
+            'link' => 'http://www.turn-up.eu',
             'changes' => array(
                 '0.0.1'=>array('releasedate'=>'2014-03-20', 'lines' => array(
                     'First Test'
                 ))
             ),
-            'revision' => '2'
+            'revision' => '3'
         );
     }
  
@@ -69,11 +70,34 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             's_articles_attributes'
         ));
 		*/
+		$this->createConfiguration();
         return array(
             'success' => true,
             'message' => 'All is well.'
         );
     }
+
+	public function createConfiguration()
+	{
+		$form = $this->Form();
+		$repository = Shopware()->Models()->getRepository('Shopware\Models\Config\Form');
+		
+		$form->setElement('text', 'xmlPath',
+			array(
+				'label' => 'XML Pfad',
+				'value' => 'wo soll die XML abgelegt werden?',
+				'scope' => Shopware\Models\Config\Element::SCOPE_SHOP,
+				'description' => 'XML Pfad für Orderexport',
+				'required' => true,
+			)
+		);
+
+		$form->setParent(
+			$repository->findOneBy(
+				array('name' => 'Interface')
+			)
+		);
+	}
  
     public function uninstall()
     {
@@ -125,11 +149,22 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 
 	public function onSaveOrder(Enlight_Event_EventArgs $arguments)
 	{
-		
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
-
+			echo $this->xmlPath();
+			die();
+		}
 	}
- 
+	
+	public function xmlPath()
+	{
+		$path = $_SERVER["DOCUMENT_ROOT"];
+		$configString = Shopware()->Plugins()->Frontend()->GraphodataExport()->Config()->xmlPath;
+		$path .= $configString;
+		return $path;
+	}
+	
+
+
     /*public function onGetBackendController(Enlight_Event_EventArgs $arguments)
     {
         $this->Application()->Template()->addTemplateDir(
@@ -197,3 +232,4 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
  
  
 }
+ 
