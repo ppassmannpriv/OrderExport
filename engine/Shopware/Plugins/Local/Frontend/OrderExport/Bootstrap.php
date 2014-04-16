@@ -146,28 +146,26 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
         );*/
  
     }
+	
+	public function setXmlPath()
+	{
+		$path = $_SERVER["DOCUMENT_ROOT"];
+		$configString = Shopware()->Plugins()->Frontend()->OrderExport()->Config()->xmlPath;
+		$path .= DS.$configString;
+		return $path;
+	}
 
 	public function onSaveOrder(Enlight_Event_EventArgs $arguments)
 	{
+			
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
-			echo $this->xmlPath();
-			if($this->createFile('test', $this->xmlPath(), 'xml', 'This is just a test, move along!'))
+			if($this->createFile('test', $this->setXmlPath(), 'xml', 'This is just a test, move along!'))
 			{
 				echo 'superb!';
 			} else {
 				echo 'wait what?';
 			}
 			
-			die();
-		}
-	}
-	
-	public function xmlPath()
-	{
-		$path = $_SERVER["DOCUMENT_ROOT"];
-		$configString = Shopware()->Plugins()->Frontend()->GraphodataExport()->Config()->xmlPath;
-		$path .= $configString;
-		return $path;
 	}
 	
 	public function createFile($name, $path, $type, $data)
@@ -180,7 +178,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 		} else {
 			return false;
 		}
-	}
+	}	
 
     /*public function onGetBackendController(Enlight_Event_EventArgs $arguments)
     {
@@ -242,7 +240,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
  
     }
 	*/
- 
+	
     public function afterInit()
     {
         $this->registerCustomModels();
