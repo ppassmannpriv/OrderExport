@@ -49,7 +49,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
  
         // -Modul
         /*$this->createMenuItem(array(
-            'label' => 'Graphodata Export',
+            'label' => 'Order Export',
             'controller' => 'viewExport',
             'class' => 'sprite-box-zipper',
             'action' => 'Index',
@@ -57,22 +57,6 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             'parent' => $this->Menu()->findOneBy('label', 'MENÜ')
         ));
  
-        $this->Application()->Models()->addAttribute(
-            's_articles_attrijQuery('  ').focus(function(){
-				if(jQuery(this).hasClass('changed')){
-				} else {
-					var value = jQuery(this).val();
-				butes',
-            'ppassmann',
-            'ExportXml',
-            'varchar(255)',
-            true,
-            null
-        );
- 
-        $this->getEntityManager()->generateAttributeModels(array(
-            's_articles_attributes'
-        ));
 		*/
 		$this->createConfiguration();
         return array(
@@ -122,27 +106,12 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
  
     private function subscribeEvents()
     {
-		/*
-        $this->subscribeEvent(
-            'Enlight_Controller_Dispatcher_ControllerPath_Backend_viewExport',
-            'onGetBackendController'
-        );*/
- 
-        /*$this->subscribeEvent(
-            'Enlight_Controller_Action_PreDispatch_Frontend_Checkout',
-            'onCheckoutPreDispatch'
-        );*/
  
         $this->subscribeEvent(
             'Shopware_Modules_Order_SendMail_FilterVariables',
             'onSaveOrder'
         );
  
- 
-        /*$this->subscribeEvent(
-            'sBasket::sAddArticle::before',
-            'onAddArticle'
-        );*/
  
         $this->subscribeEvent(
 			'Enlight_Bootstrap_InitResource_OrderExport',
@@ -187,13 +156,6 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 
 	}
 	
-	public function setXmlPath()
-	{
-		$path = $_SERVER["DOCUMENT_ROOT"];
-		$configString = Shopware()->Plugins()->Frontend()->OrderExport()->Config()->xmlPath;
-		$path .= DS.$configString;
-		return $path;
-	}
 
 	public function onSaveOrder(Enlight_Event_EventArgs $arguments)
 	{
@@ -206,7 +168,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 			
 			
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
-			if($this->createFile('test', $this->setXmlPath(), 'xml', 'This is just a test, move along!'))
+			if($helper->createFile('test', $helper->setXmlPath(), 'xml', 'This is just a test, move along!'))
 			{
 				echo 'superb!';
 			} else {
@@ -215,66 +177,6 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 			
 	}
 	
-	public function createFile($name, $path, $type, $data)
-	{
-		$filePath = $path.DS.$name.'.'.$type;
-		file_put_contents($filePath, $data);
-		if(file_exists($filePath))
-		{
-			return true;
-		} else {
-			return false;
-		}
-	}	
-
-    /*public function onGetBackendController(Enlight_Event_EventArgs $arguments)
-    {
-        $this->Application()->Template()->addTemplateDir(
-            $this->Path() . 'Views/'
-        );
-        return $this->Path(). 'Controllers/Backend/viewExport.php';
-    }*/
- 
-
-	/* 
-    public function onAddArticle(Enlight_Hook_HookArgs $arguments)
-    {
-        $id = $arguments->get('id');
-        $result = $arguments->getReturn();
- 
-        $arguments->setReturn($result);
-        }
-    }
- 
- 
-    public function onCheckoutPostDispatch(Enlight_Event_EventArgs $arguments)
-    {
-        $subject = $arguments->getSubject();
- 
-        $request = $subject->Request();
- 
-        $response = $subject->Response();
- 
-        $view = $subject->View();
- 
-        if (!$request->isDispatched() || $response->isException() || !$view->hasTemplate()) {
-            return;
-        }
- 
-        $view->addTemplateDir($this->Path() . 'Views/');
- 
-    }
- 
-    public function onCheckoutPreDispatch(Enlight_Event_EventArgs $arguments)
-    {
-        $subject = $arguments->getSubject();
- 
-        $request = $subject->Request();
- 
-        $view = $subject->View();
- 
-    }
-	*/
 	
     public function afterInit()
     {
