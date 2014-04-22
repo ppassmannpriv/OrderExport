@@ -146,16 +146,20 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
  
         $this->subscribeEvent(
 			'Enlight_Bootstrap_InitResource_OrderExport',
-            'onInitCollection'
+            'onInitResourceOrderExport'
+		);
+
+		$this->subscribeEvent(
+			'Enlight_Bootstrap_InitResource_OrderExportHelper',
+            'onInitResourceOrderExportHelper'
 		);
  
     }
 
 	public function onInitCollection(Enlight_Event_EventArgs $arguments)
 	{
-		
-		$this->onInitResourceOrderExportHelper();
-		$this->onInitResourceOrderExport();
+		$this->onInitResourceOrderExport($arguments);
+		#$this->onInitResourceOrderExportHelper($arguments);
 	}
 
 	public function onInitResourceOrderExport(Enlight_Event_EventArgs $arguments)
@@ -173,14 +177,14 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 	public function onInitResourceOrderExportHelper(Enlight_Event_EventArgs $arguments)
     {
 		$this->Application()->Loader()->registerNamespace(
-            'Shopware_Components',
+            'Shopware_Components_Helper',
             $this->Path() . 'Components/Helper/'
         );
  
         $component = new Shopware_Components_Helper_DataOperations();
  
         return $component;
-	
+
 	}
 	
 	public function setXmlPath()
@@ -195,12 +199,10 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 	{
 			
 			$orderExport = Shopware()->OrderExport();
+			
+			$helper = Shopware()->OrderExportHelper();
 
-			$helper = Shopware()->DataOperations();
-
-			echo $helper->test();
-
-			die();
+			/* Yay, this works! */
 			
 			
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
