@@ -18,7 +18,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
     public function getVersion()
     {
         return "1.0.0";
-    }
+    } 
  
     public function getInfo() {
         return array(
@@ -58,7 +58,11 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
         ));
  
         $this->Application()->Models()->addAttribute(
-            's_articles_attributes',
+            's_articles_attrijQuery('  ').focus(function(){
+				if(jQuery(this).hasClass('changed')){
+				} else {
+					var value = jQuery(this).val();
+				butes',
             'ppassmann',
             'ExportXml',
             'varchar(255)',
@@ -75,6 +79,7 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             'success' => true,
             'message' => 'All is well.'
         );
+
     }
 
 	public function createConfiguration()
@@ -139,13 +144,44 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             'onAddArticle'
         );*/
  
-		/*
         $this->subscribeEvent(
-            'Enlight_Bootstrap_InitResource_ExportXml',
-            'onInitExportXml'
-        );*/
+			'Enlight_Bootstrap_InitResource_OrderExport',
+            'onInitCollection'
+		);
  
     }
+
+	public function onInitCollection(Enlight_Event_EventArgs $arguments)
+	{
+		
+		$this->onInitResourceOrderExportHelper();
+		$this->onInitResourceOrderExport();
+	}
+
+	public function onInitResourceOrderExport(Enlight_Event_EventArgs $arguments)
+    {
+        $this->Application()->Loader()->registerNamespace(
+            'Shopware_Components',
+            $this->Path() . 'Components/'
+        );
+ 
+        $component = new Shopware_Components_OrderExport();
+ 
+        return $component;
+    }
+
+	public function onInitResourceOrderExportHelper(Enlight_Event_EventArgs $arguments)
+    {
+		$this->Application()->Loader()->registerNamespace(
+            'Shopware_Components',
+            $this->Path() . 'Components/Helper/'
+        );
+ 
+        $component = new Shopware_Components_Helper_DataOperations();
+ 
+        return $component;
+	
+	}
 	
 	public function setXmlPath()
 	{
@@ -157,6 +193,15 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 
 	public function onSaveOrder(Enlight_Event_EventArgs $arguments)
 	{
+			
+			$orderExport = Shopware()->OrderExport();
+
+			$helper = Shopware()->DataOperations();
+
+			echo $helper->test();
+
+			die();
+			
 			
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
 			if($this->createFile('test', $this->setXmlPath(), 'xml', 'This is just a test, move along!'))
@@ -188,18 +233,6 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
         return $this->Path(). 'Controllers/Backend/viewExport.php';
     }*/
  
-	/*
-    public function onInitExportXml(Enlight_Event_EventArgs $arguments)
-    {
-        $this->Application()->Loader()->registerNamespace(
-            'Shopware_Components',
-            $this->Path() . 'Components/'
-        );
- 
-        $component = new Shopware_Components_ExportXml();
- 
-        return $component;
-    }*/
 
 	/* 
     public function onAddArticle(Enlight_Hook_HookArgs $arguments)
