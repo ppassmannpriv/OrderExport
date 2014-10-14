@@ -27,8 +27,8 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             'label' => $this->getLabel(),
 			'autor' => 'Pieter Paßmann',
             'description' => file_get_contents($this->Path() . 'info.txt'),
-            'support' => 'http://www.turn-up.eu',
-            'link' => 'http://www.turn-up.eu',
+            'support' => 'http://www.scriptkid.de',
+            'link' => 'http://www.scriptkid.de',
             'changes' => array(
                 '0.0.1'=>array('releasedate'=>'2014-03-20', 'lines' => array(
                     'First Test'
@@ -112,15 +112,19 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             'onSaveOrder'
         );
  
- 
         $this->subscribeEvent(
 			'Enlight_Bootstrap_InitResource_OrderExport',
             'onInitResourceOrderExport'
 		);
 
 		$this->subscribeEvent(
-			'Enlight_Bootstrap_InitResource_OrderExportHelper',
+			'Enlight_Bootstrap_InitResource_OrderExportData',
             'onInitResourceOrderExportHelper'
+		);
+
+		$this->subscribeEvent(
+			'Enlight_Bootstrap_InitResource_OrderExportXml',
+            'onInitResourceOrderExportXml'
 		);
  
     }
@@ -128,7 +132,6 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 	public function onInitCollection(Enlight_Event_EventArgs $arguments)
 	{
 		$this->onInitResourceOrderExport($arguments);
-		#$this->onInitResourceOrderExportHelper($arguments);
 	}
 
 	public function onInitResourceOrderExport(Enlight_Event_EventArgs $arguments)
@@ -150,10 +153,22 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
             $this->Path() . 'Components/Helper/'
         );
  
-        $component = new Shopware_Components_Helper_DataOperations();
+        $component = new Shopware_Components_Helper_Data();
  
         return $component;
 
+	}
+
+	public function onInitResourceOrderExportXml(Enlight_Event_EventArgs $arguments)
+	{
+		$this->Application()->Loader()->registerNamespace(
+            'Shopware_Components',
+            $this->Path() . 'Components/Helper/'
+        );
+ 
+        $component = new Shopware_Components_Helper_Xml();
+ 
+        return $component;
 	}
 	
 
@@ -162,13 +177,14 @@ class Shopware_Plugins_Frontend_OrderExport_Bootstrap extends Shopware_Component
 			
 			$orderExport = Shopware()->OrderExport();
 			
-			$helper = Shopware()->OrderExportHelper();
+			$helper = Shopware()->OrderExportData();
 
 			/* Yay, this works! */
 			
-			
+			$xml = $orderExport->getXml($arguments);
+			var_dump($xml);
 			//CREATE AN ORDER XML? POST TO WEBSERVICE? FUNTIMES!
-			if($helper->createFile('test', $helper->setXmlPath(), 'xml', 'This is just a test, move along!'))
+			if($helper->createFile('test', $helper->setXmlPath(), 'xml', $xml))
 			{
 				echo 'superb!';
 			} else {
